@@ -1,10 +1,10 @@
-package com.example.demo;
+package com.example.uptime;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class UptimeApplicationTests {
 
 	@Test
 	void contextLoads() {

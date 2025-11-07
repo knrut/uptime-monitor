@@ -12,3 +12,14 @@ spring:
     enabled: true
 server:
   port: 8080
+
+uptime:
+  scheduler:
+    tick-sec: 5         # co ile sekund budzi się scheduler (pętla)
+    parallelism: 4      # ile targetów maksymalnie sprawdzamy równolegle
+  http:
+    connect-timeout-ms: 2000
+    read-timeout-ms: 5000
+    follow-redirects: true
+    user-agent: "UptimeMonitor/1.0 (+https://your-domain)"
+
