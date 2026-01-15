@@ -27,7 +27,7 @@ public class GlobalExceptionHandler {
         Map<String,Object> body = new HashMap<>();
         body.put("error", "runtime_error");
         body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);git s
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
 }
