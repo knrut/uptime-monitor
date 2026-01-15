@@ -12,3 +12,5 @@ public interface CheckResultRepository extends JpaRepository<CheckResult, Long> 
     Page<CheckResult> findByTarget(Target target, Pageable pageable);
     Optional<CheckResult> findTopByTargetOrderByCreatedAtDesc(Target target);
 }
+
+

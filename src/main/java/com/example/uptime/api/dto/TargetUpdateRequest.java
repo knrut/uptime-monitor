@@ -6,5 +6,5 @@ public record TargetUpdateRequest(
         @NotBlank @Size(max = 2024) @Pattern(regexp = "https?://.*")
         String url,
         @NotNull Boolean enabled,
-        @Min(10) @Max(86400) Integer checkEverysec
+        @Min(10) @Max(86400) Integer checkEverySec
 ) {}
