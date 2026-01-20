@@ -7,7 +7,6 @@ import com.example.uptime.domain.Target;
 import com.example.uptime.repo.TargetRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +24,7 @@ public class TargetController {
     @GetMapping
     public Page<TargetResponse> list(@RequestParam(defaultValue = "0") int page,
                                      @RequestParam(defaultValue = "20") int size) {
-        // Page<Target> p = targets.findAll(PageRequest.of(page, Math.min(size, 100), Sort.by("id").ascending()));
-        // return p.map(Mappers::toResponse);
-        return service.readAll(page, size);
+        return service.findAll(page, size);
     }
 
     @GetMapping("/{id}")
@@ -39,41 +36,21 @@ public class TargetController {
     @PostMapping
     @Transactional
     public ResponseEntity<TargetResponse> create(@RequestBody @Valid TargetCreateRequest req) {
-        if (targets.existsByUrl(req.url())) {
-            throw new ConflictException("Target with url '%s' already exists".formatted(req.url()));
-        }
-        Target t = new Target()
-                .setName(req.name())
-                .setUrl(req.url())
-                .setEnabled(req.enabled())
-                .setCheckEverySec(req.checkEverySec());
-        Target saved = targets.save(t);
-        return ResponseEntity.created(URI.create("/api/targets/" + saved.getId()))
-                .body(Mappers.toResponse(saved));
+        TargetResponse saved = service.save(req);
+        return ResponseEntity.created(URI.create("/api/targets/" + saved.id())).body(saved);
     }
 
     @PutMapping("/{id}")
     @Transactional
     public TargetResponse update(@PathVariable Long id, @RequestBody @Valid TargetUpdateRequest req) {
-        Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
-
-        if (!t.getUrl().equals(req.url()) && targets.existsByUrl(req.url())) {
-            throw new ConflictException("Target with url '%s' already exists".formatted(req.url()));
-        }
-
-        t.setName(req.name())
-                .setUrl(req.url())
-                .setEnabled(req.enabled())
-                .setCheckEverySec(req.checkEverySec());
-
-        return Mappers.toResponse(t);
+        TargetResponse targetResponse = service.update(id, req);
+        return targetResponse;
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
-        targets.delete(t);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
