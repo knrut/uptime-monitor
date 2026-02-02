@@ -4,16 +4,6 @@ import com.example.uptime.api.dto.CheckResultResponse;
 import com.example.uptime.domain.CheckResult;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-//
-//@Mapper(
-//        componentModel = "spring",
-//        unmappedTargetPolicy = ReportingPolicy.ERROR
-//)
-//public interface CheckResultMapper {
-//    @Mapping(target = "targetId", source = "target.id")
-//    CheckResultResponse toResponse(CheckResult r);
-//}
 
 @Mapper(componentModel = "spring")
 public interface CheckResultMapper {

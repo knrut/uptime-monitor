@@ -3,17 +3,6 @@ import com.example.uptime.api.dto.TargetResponse;
 import com.example.uptime.domain.Target;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
-
-//@Mapper(
-//        componentModel = "spring",
-//        unmappedTargetPolicy = ReportingPolicy.ERROR
-//)
-//
-//public interface TargetMapper {
-//
-//    TargetResponse toResponse(Target t);
-//}
 
 @Mapper(componentModel = "spring")
 public interface TargetMapper {

@@ -7,7 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.net.BindException;
+import org.springframework.validation.BindException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,19 +15,26 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
-    public ResponseEntity<Map<String,Object>> handleValidation(Exception ex){
-        Map<String,Object> body = new HashMap<>();
-        body.put("error", "validation_failed");
-        body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    public ResponseEntity<Map<String, Object>> validation(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "validation_failed", "message", ex.getMessage()));
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntime(RuntimeException ex) {
-        Map<String,Object> body = new HashMap<>();
-        body.put("error", "runtime_error");
-        body.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Map<String, Object>> notFound(NotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "not_found", "message", ex.getMessage()));
     }
 
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, Object>> conflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", "conflict", "message", ex.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> other(Exception ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "internal_error", "message", ex.getMessage()));
+    }
 }
