@@ -25,4 +25,3 @@ public class UptimeApplication {
 // 4. OAuth - podstawy
 // 5. Autoryzacja i Autentykacja (czym sie roznia + podstawy)
 
-

@@ -29,8 +29,7 @@ public class TargetController {
 
     @GetMapping("/{id}")
     public TargetResponse get(@PathVariable Long id) {
-        Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
-        return Mappers.toResponse(t);
+        return service.findById(id);
     }
 
     @PostMapping

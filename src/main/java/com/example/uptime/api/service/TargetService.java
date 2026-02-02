@@ -7,6 +7,7 @@ import com.example.uptime.api.dto.TargetCreateRequest;
 import com.example.uptime.api.dto.TargetResponse;
 import com.example.uptime.api.dto.TargetUpdateRequest;
 import com.example.uptime.api.mapper.Mappers;
+import com.example.uptime.api.mapper.TargetMapper;
 import com.example.uptime.domain.Target;
 import com.example.uptime.repo.TargetRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,15 +20,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TargetService {
     private final TargetRepository targets;
+    private final TargetMapper targetMapper;
 
     public Page<TargetResponse> findAll(int page, int size) {
         Page<Target> p = targets.findAll(PageRequest.of(page, Math.min(size, 100), Sort.by("id").ascending()));
-        return p.map(Mappers::toResponse);
+        return p.map(targetMapper::toResponse);
     }
 
     public TargetResponse findById(Long id) {
         Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
-        return Mappers.toResponse(t);
+        return targetMapper.toResponse(t);
     }
 
     public TargetResponse save(TargetCreateRequest req) {
@@ -42,7 +44,7 @@ public class TargetService {
                 .setCheckEverySec(req.checkEverySec());
 
         Target saved = targets.save(t);
-        return Mappers.toResponse(saved);
+        return targetMapper.toResponse(saved);
     }
 
     public TargetResponse update(Long id, TargetUpdateRequest req) {
@@ -57,7 +59,7 @@ public class TargetService {
                 .setEnabled(req.enabled())
                 .setCheckEverySec(req.checkEverySec());
 
-        return Mappers.toResponse(t);
+        return targetMapper.toResponse(t);
     }
 
     public void delete(Long id) {

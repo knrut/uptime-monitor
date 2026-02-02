@@ -4,12 +4,14 @@ package com.example.uptime.api;
 import com.example.uptime.api.dto.CheckResultResponse;
 import com.example.uptime.api.dto.CreateCheckResultRequest;
 import com.example.uptime.api.mapper.Mappers;
+import com.example.uptime.api.service.CheckResultService;
 import com.example.uptime.domain.CheckResult;
 import com.example.uptime.domain.Target;
 import com.example.uptime.repo.CheckResultRepository;
 import com.example.uptime.repo.TargetRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +24,12 @@ import java.time.OffsetDateTime;
 
 @RestController
 @RequestMapping("/api/results")
+@RequiredArgsConstructor
 public class CheckResultController {
 
     private final CheckResultRepository results;
     private final TargetRepository targets;
-
-    public CheckResultController(CheckResultRepository results, TargetRepository targets) {
-        this.results = results;
-        this.targets = targets;
-    }
+    private final CheckResultService service;
 
     @GetMapping
     public Page<CheckResultResponse> list(@RequestParam(required = false) Long targetId,
@@ -55,18 +54,8 @@ public class CheckResultController {
     @PostMapping
     @Transactional
     public ResponseEntity<CheckResultResponse> create(@RequestBody @Valid CreateCheckResultRequest req) {
-        Target t = targets.findById(req.targetId())
-                .orElseThrow(() -> new NotFoundException("Target %d not found".formatted(req.targetId())));
-
-        CheckResult r = new CheckResult()
-                .setTarget(t)
-                .setStatus(req.status())
-                .setLatencyMs(req.latencyMs() != null ? req.latencyMs() : 0)
-                .setErrorMsg(req.errorMsg())
-                .setCreatedAt(req.createdAt() != null ? req.createdAt() : OffsetDateTime.now());
-
-        CheckResult saved = results.save(r);
-        return ResponseEntity.created(URI.create("/api/results/" + saved.getId()))
-                .body(Mappers.toResponse(saved));
+        CheckResultResponse saved = service.save(req);
+        return ResponseEntity.created(URI.create("/api/results/" + saved.id()))
+                .body(saved);
     }
 }

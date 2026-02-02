@@ -28,7 +28,7 @@ public class CheckResult {
     @Column(name = "latency_ms", nullable = false)
     private Integer latencyMs;
 
-    @Column(name = "erros_msg")
+    @Column(name = "error_msg")
     private String errorMsg;
 
     @Column(name = "created_at", nullable = false, columnDefinition = "timestamp with time zone")

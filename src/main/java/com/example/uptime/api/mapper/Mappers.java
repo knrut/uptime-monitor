@@ -4,7 +4,9 @@ import com.example.uptime.api.dto.*;
 import com.example.uptime.domain.CheckResult;
 import com.example.uptime.domain.Target;
 
-public class Mappers {
+
+// Mapstruct
+public final class Mappers {
     private Mappers(){}
 
     public static TargetResponse toResponse(Target t) {
@@ -20,5 +22,7 @@ public class Mappers {
                 r.getErrorMsg(),
                 r.getCreatedAt()
         );
+
+
     }
 }
