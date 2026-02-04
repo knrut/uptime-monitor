@@ -50,14 +50,7 @@ public class TargetService {
     public TargetResponse update(Long id, TargetUpdateRequest req) {
         Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
 
-        if (!t.getUrl().equals(req.url()) && targets.existsByUrl(req.url())) {
-            throw new ConflictException("Target with url '%s' already exists".formatted(req.url()));
-        }
-
-        t.setName(req.name())
-                .setUrl(req.url())
-                .setEnabled(req.enabled())
-                .setCheckEverySec(req.checkEverySec());
+        t.setName(req.name()).setCheckEverySec(req.checkEverySec());
 
         return targetMapper.toResponse(t);
     }
