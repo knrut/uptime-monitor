@@ -66,4 +66,10 @@ public class TargetService {
         Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
         targets.delete(t);
     }
+
+    public void freeze(Long id) {
+        Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
+        t.setEnabled(false);
+        targets.save(t);
+    }
 }
