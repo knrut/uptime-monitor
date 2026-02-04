@@ -59,4 +59,11 @@ public class TargetController {
         service.freeze(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/unfreeze")
+    @Transactional
+    public ResponseEntity<Void> unfreeze(@PathVariable Long id) {
+        service.unfreeze(id);
+        return ResponseEntity.noContent().build();
+    }
 }

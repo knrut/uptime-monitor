@@ -72,4 +72,10 @@ public class TargetService {
         t.setEnabled(false);
         targets.save(t);
     }
+
+    public void unfreeze(Long id) {
+        Target t = targets.findById(id).orElseThrow(() -> new NotFoundException("Target %d not found".formatted(id)));
+        t.setEnabled(true);
+        targets.save(t);
+    }
 }
