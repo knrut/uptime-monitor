@@ -1,7 +1,9 @@
 package com.example.uptime.api;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -39,14 +41,17 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest req) {
-        req.getSession(false).invalidate();
+        HttpSession session = req.getSession(false);
+        if (session != null) session.invalidate();
         SecurityContextHolder.clearContext();
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
-        if (auth == null || !auth.isAuthenticated()) return ResponseEntity.status(401).build();
+        if (auth == null || auth instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).build();
+        }
         return ResponseEntity.ok(new MeResponse(auth.getName()));
     }
 }
