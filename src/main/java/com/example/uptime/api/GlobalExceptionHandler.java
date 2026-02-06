@@ -2,7 +2,6 @@ package com.example.uptime.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,10 +15,34 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, BindException.class})
-    public ResponseEntity<Map<String, Object>> validation(Exception ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", "validation_failed", "message", ex.getMessage()));
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    public ResponseEntity<Map<String, Object>> authError(Exception ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of(
+                        "error", "unauthorized",
+                        "message", "Username or password are not valid"
+                ));
+    }
+
+    private ResponseEntity<Map<String, Object>> validationBody(org.springframework.validation.BindingResult br) {
+        Map<String, String> fields = new HashMap<>();
+        br.getFieldErrors().forEach(err -> fields.putIfAbsent(err.getField(), err.getDefaultMessage()));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+                "error", "validation_failed",
+                "message", "Validation failed",
+                "fields", fields
+        ));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> validation(MethodArgumentNotValidException ex) {
+        return validationBody(ex.getBindingResult());
+    }
+
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<Map<String, Object>> validation(BindException ex) {
+        return validationBody(ex.getBindingResult());
     }
 
     @ExceptionHandler(NotFoundException.class)
@@ -40,12 +63,4 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", "internal_error", "message", ex.getMessage()));
     }
 
-    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
-    public ResponseEntity<Map<String, Object>> authError(Exception ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(Map.of(
-                        "error", "unauthorized",
-                        "message", "Username or password are not valid"
-                ));
-    }
 }
