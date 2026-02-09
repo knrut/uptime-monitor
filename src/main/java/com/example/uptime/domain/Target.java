@@ -27,4 +27,9 @@ public class Target {
 
     @Column(name = "check_every_sec", nullable = false)
     private Integer checkEverySec = 30;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private com.example.uptime.domain.User user;
 }
