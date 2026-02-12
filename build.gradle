@@ -43,6 +43,7 @@ dependencies {
     testImplementation "org.testcontainers:junit-jupiter"
     testImplementation "org.testcontainers:postgresql"
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation "org.flywaydb:flyway-core"
 }
 
 tasks.named('test') {

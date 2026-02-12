@@ -1,29 +1,30 @@
 spring:
-  security:
-    user:
-      name: admin
-      password: admin
   datasource:
     url: jdbc:postgresql://localhost:5433/uptime
     username: uptime
     password: uptime
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     open-in-view: false
+
   flyway:
     enabled: true
+
 server:
   port: 8080
 
+mail:
+  mock: true
+
 uptime:
   scheduler:
-    tick-sec: 5         # co ile sekund budzi się scheduler (pętla)
-    parallelism: 4      # ile targetów maksymalnie sprawdzamy równolegle
+    tick-sec: 5
+    parallelism: 4
   http:
     connect-timeout-ms: 2000
     read-timeout-ms: 5000
     follow-redirects: true
     user-agent: "UptimeMonitor/1.0 (+https://your-domain)"
-
