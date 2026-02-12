@@ -2,7 +2,7 @@ package com.example.uptime.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Setter;
+
 
 public class AuthDto {
     public record RegisterRequest(
@@ -16,4 +16,9 @@ public class AuthDto {
     ) {}
 
     public record MeResponse(Long id, String username) {}
+
+    public record ChangePasswordRequest(
+            @NotBlank @Size(min = 6, max = 128) String oldPassword,
+            @NotBlank @Size(min = 6, max = 128) String newPassword
+    ) {}
 }

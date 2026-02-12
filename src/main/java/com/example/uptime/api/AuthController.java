@@ -29,8 +29,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody AuthDto.RegisterRequest request,
-                                      HttpServletRequest httpServletRequest) {
+    public ResponseEntity<?> register(@RequestBody AuthDto.RegisterRequest request) {
         if (userRepository.existsByUsername(request.username())) {
             return ResponseEntity.status(409).body("Username already taken");
         }
@@ -83,4 +82,30 @@ public class AuthController {
 
         return ResponseEntity.ok(new MeResponse(user.getId(), authentication.getName()));
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody AuthDto.ChangePasswordRequest changePasswordRequest,
+                                            Authentication authentication) {
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String username = authentication.getName();
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,
+                    changePasswordRequest.oldPassword()));
+        } catch (Exception e) {
+            return ResponseEntity.status(403).body("Current password is incorrect");
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.newPassword()));
+        userRepository.save(user);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
