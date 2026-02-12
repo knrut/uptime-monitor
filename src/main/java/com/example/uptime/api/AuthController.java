@@ -14,8 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 import static com.example.uptime.api.dto.AuthDto.*;
 
@@ -84,28 +84,38 @@ public class AuthController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody AuthDto.ChangePasswordRequest changePasswordRequest,
-                                            Authentication authentication) {
+    public ResponseEntity<?> changePassword(
+            @RequestBody AuthDto.ChangePasswordRequest changePasswordRequest,
+            Authentication authentication,
+            HttpServletRequest request
+    ) {
+
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             return ResponseEntity.status(401).build();
         }
 
         String username = authentication.getName();
 
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,
-                    changePasswordRequest.oldPassword()));
-        } catch (Exception e) {
-            return ResponseEntity.status(403).body("Current password is incorrect");
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        username,
+                        changePasswordRequest.oldPassword()
+                )
+        );
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
+        User user = userRepository.findByUsername(username).orElseThrow();
         user.setPasswordHash(passwordEncoder.encode(changePasswordRequest.newPassword()));
         userRepository.save(user);
 
-        return ResponseEntity.noContent().build();
+
+        request.getSession(false).invalidate();
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok(
+                Map.of("message", "Password changed. Please log in again.")
+        );
     }
 
+
 }
+
