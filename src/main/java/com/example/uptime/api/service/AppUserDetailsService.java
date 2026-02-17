@@ -13,13 +13,14 @@ public class AppUserDetailsService implements UserDetailsService {
     private final UserRepository users;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        com.example.uptime.domain.User user = users.findByUsername(username)
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        com.example.uptime.domain.User user = users.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return User.withUsername(user.getUsername())
-                .password(user.getPasswordHash()) // bcrypt hash z DB
+        return User.withUsername(user.getEmail())
+                .password(user.getPasswordHash())
                 .roles("USER")
+                .disabled(!user.isEmailVerified() || user.isBanned())
                 .build();
     }
 }
